@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythagorean 53EDO Analyzer</title>
+    <link rel="stylesheet" href="./src/style.css">
+    <style>
+        .partch-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(25, 25, 30, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            font-size: 1.1rem;
+        }
+
+        .controls select {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .controls select:focus {
+            border-color: #3b82f6;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .dir-root { background-color: #3b82f6; color: white; font-weight: bold; border: 2px solid #1e3a8a; } /* Blue for Root */
+        .dir-ascending { background-color: #22c55e; color: white; } /* Green for Ascending (Fifths) */
+        .dir-descending { background-color: #f59e0b; color: white; } /* Orange for Descending (Fourths) */
+
+        .ratios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .ratio-card {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-align: left;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .ratio-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .ratio-original {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+        
+        .ratio-limit {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Pythagorean 53EDO Analyzer</h1>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">EDO Pitch Class Set</a>
+                <a href="mos.html" class="nav-link">MOS Generator</a>
+                <a href="submos.html" class="nav-link">Secondary MOS</a>
+                <a href="partch.html" class="nav-link">🌌 Partch JI Matrix</a>
+                <a href="dalessandro.html" class="nav-link">🕸️ D'Alessandro CPS</a>
+                <a href="pythagorean.html" class="nav-link active">📐 Pythagorean 53EDO</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="partch-container">
+                <div class="controls">
+                    <label for="degreeSelect"><strong>Reference Degree (1/1):</strong></label>
+                    <select id="degreeSelect">
+                        <!-- Options populated by JS -->
+                    </select>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item"><div class="color-box dir-root"></div> Reference Degree</div>
+                    <div class="legend-item"><div class="color-box dir-ascending"></div> Ascending Fifths (up to PC 51)</div>
+                    <div class="legend-item"><div class="color-box dir-descending"></div> Descending Fifths (down to PC 29)</div>
+                </div>
+
+                <div class="ratios-grid" id="ratiosGrid">
+                    <!-- Cards populated by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/pythagorean-ui.ts"></script>
+</body>
+</html>

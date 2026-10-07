@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOS Generator - EDO Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-color: #0f172a;
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --accent-glow: rgba(59, 130, 246, 0.5);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --step-box: #1e293b;
+        --step-border: #475569;
+        
+        --font-sans: 'Outfit', sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-color);
+        background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 70%);
+        color: var(--text-main);
+        min-height: 100vh;
+        margin: 0;
+        padding: 2rem;
+        box-sizing: border-box;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 2.5rem;
+        background: linear-gradient(to right, #34d399, #10b981);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .nav-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-link:hover {
+        color: var(--text-main);
+      }
+
+      .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px var(--accent-glow);
+      }
+
+      .controls {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      input {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-family: var(--font-mono);
+        transition: all 0.2s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      button {
+        background-color: var(--accent);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font-sans);
+      }
+
+      button:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--accent-glow);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      /* Results styling */
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 1.5rem;
+      }
+
+      .results-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--text-main);
+      }
+
+      .results-count {
+        background: rgba(255,255,255,0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .mos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .mos-item {
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.2s;
+        animation: fadeIn 0.4s ease-out forwards;
+        opacity: 0;
+      }
+
+      .mos-item:hover {
+        border-color: var(--accent);
+        background: rgba(30, 41, 59, 0.8);
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .mos-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+      }
+
+      .mos-title h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: #a78bfa;
+      }
+
+      .mos-badge {
+        background: rgba(167, 139, 250, 0.2);
+        color: #d8b4fe;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
+
+      .mos-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .mos-stat-val {
+        color: var(--text-main);
+        font-weight: 600;
+        font-family: var(--font-mono);
+      }
+
+      /* Visual step pattern */
+      .step-pattern-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .step-pattern-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+      }
+
+      .step-blocks {
+        display: flex;
+        height: 30px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid var(--step-border);
+      }
+
+      .step-block {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        color: white;
+      }
+
+      .step-block:last-child {
+        border-right: none;
+      }
+
+      .block-small { background: rgba(59, 130, 246, 0.6); }
+      .block-large { background: rgba(139, 92, 246, 0.6); }
+      
+      .raw-pattern {
+        margin-top: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        word-break: break-all;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-muted);
+      }
+
+      .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      /* Set Details */
+      .set-details-container {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .set-detail {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+      }
+
+      .set-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+        min-width: 80px;
+      }
+
+      .set-value {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        color: var(--text-main);
+        word-break: break-all;
+      }
+
+      /* Utilities */
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>MOS Generator</h1>
+        <div class="nav-links">
+          <a href="/submos.html" class="nav-link">🌳 Secondary MOS</a>
+          <a href="/partch.html" class="nav-link">🌌 Partch JI Matrix</a>
+          <a href="/dalessandro.html" class="nav-link">🕸️ D'Alessandro CPS</a>
+                <a href="pythagorean.html" class="nav-link">📐 Pythagorean 53EDO</a>
+          <a href="/" class="nav-link">⬅️ Back to Analyzer</a>
+        </div>
+      </header>
+
+      <main>
+        <div class="card">
+          <div class="controls">
+            <div class="input-group">
+              <label for="edo-input">Period (EDO)</label>
+              <input type="number" id="edo-input" value="12" min="2" max="200" />
+            </div>
+            <div class="input-group">
+              <label for="gen-input">Generator (Degree)</label>
+              <input type="number" id="gen-input" value="5" min="1" max="199" />
+            </div>
+            <button id="generate-btn">Generate MOS</button>
+          </div>
+        </div>
+
+        <div id="results-container" class="hidden">
+          <div class="results-header">
+            <h2>Discovered MOS Scales</h2>
+            <span class="results-count" id="results-count">0 found</span>
+          </div>
+          <div id="mos-grid" class="mos-grid">
+            <!-- MOS items will be injected here via JS -->
+          </div>
+        </div>
+
+        <div id="empty-state" class="card empty-state">
+          <div class="empty-icon">✨</div>
+          <h3>Ready to discover symmetries</h3>
+          <p>Enter a Period and Generator above to calculate Moments of Symmetry.</p>
+        </div>
+      </main>
+    </div>
+    
+    <script type="module" src="/src/mos-ui.ts"></script>
+  </body>
+</html>

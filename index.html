@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EDO Analyzer - JS Modular</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        color: #2c3e50;
+      }
+      .card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+      }
+      .input-group {
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+      input, select {
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 300px;
+      }
+      button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #2980b9;
+      }
+      pre {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>EDO Pitch Class Set Analyzer</h1>
+    <div style="margin-bottom: 1.5rem;">
+        <div class="nav-links" style="display: flex; gap: 1.5rem; margin-top: 1rem;">
+          <a href="/mos.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #ccc; color: #333; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s;">✨ Primary MOS Generator</a>
+          <a href="/submos.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #ccc; color: #333; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s;">🌳 Secondary MOS Generator</a>
+          <a href="/partch.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #ccc; color: #333; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s;">🌌 Partch JI Matrix</a>
+          <a href="/dalessandro.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #ccc; color: #333; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s;">🕸️ D'Alessandro CPS</a>
+          <a href="/pythagorean.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #ccc; color: #333; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s;">📐 Pythagorean 53EDO</a>
+          <a href="/centaur.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #ccc; color: #333; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s;">🏹 Centaur Scale</a>
+        </div>
+    </div>
+    <div class="card">
+      <div class="input-group">
+        <label for="edo">Temperament (EDO)</label>
+        <select id="edo">
+          <option value="12" selected>12</option>
+          <option value="19">19</option>
+          <option value="31">31</option>
+          <option value="41">41</option>
+          <option value="53">53</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Input Format</label>
+        <div>
+          <input type="radio" id="format-set" name="input-format" value="set" checked>
+          <label for="format-set" style="display:inline; font-weight:normal;">Pitch Class Set (Set Theory) - ej: 0, 2, 4, 5, 7, 9, 11</label>
+        </div>
+        <div>
+          <input type="radio" id="format-steps" name="input-format" value="steps">
+          <label for="format-steps" style="display:inline; font-weight:normal;">Step Pattern - ej: 2, 17, 17</label>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="pcset">Input Data (comma separated)</label>
+        <input type="text" id="pcset" value="0, 2, 4, 5, 7, 9, 11" placeholder="e.g. 0, 2, 4, 5, 7, 9, 11">
+      </div>
+      <div class="input-group">
+        <label for="tn-value">Value of n for Transposition (Tn)</label>
+        <input type="number" id="tn-value" value="0">
+      </div>
+      <div class="input-group">
+        <label for="in-value">Value of n for Inversion (In)</label>
+        <input type="number" id="in-value" value="0">
+      </div>
+      <button id="analyze-btn">Analyze Set</button>
+    </div>
+
+    <div class="card" id="result-card" style="display: none;">
+      <h2>Analysis Results</h2>
+      <pre id="output"></pre>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

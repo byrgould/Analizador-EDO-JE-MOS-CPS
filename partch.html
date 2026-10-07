@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partch JI Analyzer - Erv Wilson's Theory</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        .partch-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(25, 25, 30, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls select {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .controls select:focus {
+            border-color: #3b82f6;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .limit-1 { background-color: #94a3b8; color: #0f172a; } /* Gray */
+        .limit-3 { background-color: #3b82f6; color: white; } /* Blue */
+        .limit-5 { background-color: #10b981; color: white; } /* Green */
+        .limit-7 { background-color: #f59e0b; color: #0f172a; } /* Amber */
+        .limit-11 { background-color: #8b5cf6; color: white; } /* Purple */
+        .limit-unknown { background-color: #ef4444; color: white; } /* Red */
+
+        .ratios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .ratio-card {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .ratio-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .ratio-original {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+        
+        .ratio-limit {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Partch JI Analyzer</h1>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">EDO Pitch Class Set</a>
+                <a href="mos.html" class="nav-link">MOS Generator</a>
+                <a href="submos.html" class="nav-link">Secondary MOS</a>
+                <a href="partch.html" class="nav-link active">🌌 Partch JI Matrix</a>
+                <a href="dalessandro.html" class="nav-link">🕸️ D'Alessandro CPS</a>
+                <a href="pythagorean.html" class="nav-link">📐 Pythagorean 53EDO</a>
+                <a href="pythagorean.html" class="nav-link">📐 Pythagorean 53EDO</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="partch-container">
+                <div class="controls">
+                    <label for="degreeSelect"><strong>Reference Degree (1/1):</strong></label>
+                    <select id="degreeSelect">
+                        <!-- Options populated by JS -->
+                    </select>
+                </div>
+
+                <div class="controls" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                    <div style="display: flex; flex-direction: column; width: 100%; gap: 0.5rem;">
+                        <label for="highlightInput" style="font-size: 0.9rem; font-weight: bold; color: #8a8a9a; text-transform: uppercase; letter-spacing: 1px;">Highlight Sets / Chords (Real Degrees 0-42)</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="highlightInput" placeholder="e.g., 0, 4, 7" style="flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-family: monospace; outline: none;">
+                            <button id="btnHighlight" style="padding: 0.75rem 1.5rem; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: background 0.2s;">Highlight</button>
+                            <button id="btnClearHighlight" style="padding: 0.75rem 1.5rem; background: #ef4444; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: background 0.2s;">Clear</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; width: 100%; gap: 0.5rem; margin-top: 1rem;">
+                        <label style="font-size: 0.9rem; font-weight: bold; color: #8a8a9a; text-transform: uppercase; letter-spacing: 1px;">Colecciones y Subsets</label>
+                        <select id="collection-structure-select" style="padding: 0.75rem; background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; outline: none;">
+                            <option value="">-- Seleccionar Colección --</option>
+                            <optgroup label="Secuencia Ptolemaica">
+                                <option value="Pentatonic">Escala pentatónica</option>
+                                <option value="Diatonic">Escala diatónica</option>
+                                <option value="Tetrachord_Major">Tetracordio Mayor</option>
+                                <option value="Tetrachord_Major_Utonal">Tetracordio Mayor (Recíproco)</option>
+                                <option value="Tetrachord_Minor">Tetracordio Menor</option>
+                                <option value="Tetrachord_Minor_Utonal">Tetracordio Menor (Recíproco)</option>
+                            </optgroup>
+                            <optgroup label="Géneros de Ptolomeo">
+                                <option value="Archytas_Enharmonic">Enarmónico de Arquitas</option>
+                                <option value="Archytas_Enharmonic_Utonal">Enarmónico de Arquitas (Recíproco)</option>
+                                <option value="Archytas_Chromatic">Cromático de Arquitas</option>
+                                <option value="Archytas_Chromatic_Utonal">Cromático de Arquitas (Recíproco)</option>
+                                <option value="Ptolemy_Soft_Chromatic">Cromático blando de Ptolomeo</option>
+                                <option value="Ptolemy_Soft_Chromatic_Utonal">Cromático blando de Ptolomeo (Recíproco)</option>
+                                <option value="Ptolemy_Tense_Chromatic">Cromático tenso de Ptolomeo</option>
+                                <option value="Ptolemy_Tense_Chromatic_Utonal">Cromático tenso de Ptolomeo (Recíproco)</option>
+                                <option value="Archytas_Ptolemy_Tonic_Diatonic">Diatónico tónico de Arquitas/Ptolomeo</option>
+                                <option value="Archytas_Ptolemy_Tonic_Diatonic_Utonal">Diatónico tónico de Arquitas/Ptolomeo (Recíproco)</option>
+                                <option value="Didymus_Diatonic">Diatónico de Dídimo</option>
+                                <option value="Didymus_Diatonic_Utonal">Diatónico de Dídimo (Recíproco)</option>
+                                <option value="Ptolemy_Soft_Diatonic">Diatónico blando de Ptolomeo</option>
+                                <option value="Ptolemy_Soft_Diatonic_Utonal">Diatónico blando de Ptolomeo (Recíproco)</option>
+                                <option value="Ptolemy_Ditonic_Diatonic">Diatónico ditónico de Ptolomeo</option>
+                                <option value="Ptolemy_Ditonic_Diatonic_Utonal">Diatónico ditónico de Ptolomeo (Recíproco)</option>
+                                <option value="Ptolemy_Tense_Diatonic">Diatónico tenso de Ptolomeo</option>
+                                <option value="Ptolemy_Tense_Diatonic_Utonal">Diatónico tenso de Ptolomeo (Recíproco)</option>
+                                <option value="Ptolemy_Even_Diatonic">Diatónico parejo de Ptolomeo</option>
+                                <option value="Ptolemy_Even_Diatonic_Utonal">Diatónico parejo de Ptolomeo (Recíproco)</option>
+                            </optgroup>
+                            <optgroup label="Escalas Históricas y Otras Culturas">
+                                <option value="Didymus_Chromatic_Scale">Escala Cromática de Dídimo</option>
+                                <option value="Olympos_Hexatonic">Hexatónica de Olympos</option>
+                                <option value="Ling_Lun_Pentatonic">Pentatónica de Ling Lun</option>
+                                <option value="Scholars_Lute">Escala del Lute del Sabio (Qin)</option>
+                            </optgroup>
+                            <optgroup label="Colecciones Originales de Partch">
+                                <option value="Tonality_Diamond_29">Diamante de Tonalidad de Límite 11 (29 tonos)</option>
+                                <option value="Monophonic_43">Escala Monofónica Completa (43 tonos)</option>
+                            </optgroup>
+                            <optgroup label="Otonalidades del Diamante">
+                                <option value="Otonalities">Acordes Otonales (1, 3, 5, 7, 9, 11)</option>
+                            </optgroup>
+                            <optgroup label="Utonalidades del Diamante">
+                                <option value="Utonalities">Acordes Utonales (1, 3, 5, 7, 9, 11)</option>
+                            </optgroup>
+                        </select>
+                        
+                        <select id="collection-set-select" disabled style="padding: 0.75rem; background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; outline: none; margin-top: 0.5rem;">
+                            <option value="">-- Select set --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item"><div class="color-box limit-1"></div> 1-Limit</div>
+                    <div class="legend-item"><div class="color-box limit-3"></div> 3-Limit</div>
+                    <div class="legend-item"><div class="color-box limit-5"></div> 5-Limit</div>
+                    <div class="legend-item"><div class="color-box limit-7"></div> 7-Limit</div>
+                    <div class="legend-item"><div class="color-box limit-11"></div> 11-Limit</div>
+                </div>
+
+                <div class="ratios-grid" id="ratiosGrid">
+                    <!-- Cards populated by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/partch-ui.ts"></script>
+</body>
+</html>
