@@ -9,7 +9,8 @@ export default defineConfig({
         mos: resolve(__dirname, 'mos.html'),
         submos: resolve(__dirname, 'submos.html'),
         dalessandro: resolve(__dirname, 'dalessandro.html'),
-        partch: resolve(__dirname, 'partch.html')
+        partch: resolve(__dirname, 'partch.html'),
+        pythagorean: resolve(__dirname, 'pythagorean.html')
       }
     }
   }
