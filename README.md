@@ -15,7 +15,7 @@ Asegúrate de tener instalado **Node.js** en tu computadora. Puedes descargarlo 
 
 ### Opción 1: Instrucciones para Mac y Linux
 1. Abre la aplicación **Terminal**.
-2. Navega a la carpeta de este proyecto escribiendo `cd` seguido de un espacio, y luego arrastra la carpeta `web` desde tu explorador de archivos hacia la terminal (o escribe la ruta manualmente: `cd /Users/byron/Documents/analizadorEDO/web`).
+2. Navega a la carpeta de este proyecto escribiendo `cd` seguido de la ruta donde descargaste el repositorio (o arrastra la carpeta del proyecto hacia la terminal).
 3. Presiona Enter.
 4. *(Solo la primera vez que abras el proyecto)* Escribe **npm install** y presiona Enter para instalar las dependencias.
 5. Para iniciar el proyecto, escribe **npm run dev** y presiona Enter.
