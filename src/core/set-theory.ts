@@ -91,16 +91,18 @@ export function primeForm(pcSet: number[], edo: number): number[] {
     const inverted = invertSet(pcSet, 0, edo);
     const invertedNF = normalForm(inverted, edo);
 
-    const transposedNormal = nf.length > 0 ? transposeSet(nf, -nf[0], edo) : nf;
-    const transposedInverted = invertedNF.length > 0 ? transposeSet(invertedNF, -invertedNF[0], edo) : invertedNF;
+    const tNormal = nf.length > 0 ? transposeSet(nf, -nf[0], edo) : nf;
+    const tInverted = invertedNF.length > 0 ? transposeSet(invertedNF, -invertedNF[0], edo) : invertedNF;
 
-    if (transposedNormal.length === 0 || transposedInverted.length === 0) {
-        return transposedNormal;
+    if (tNormal.length === 0 || tInverted.length === 0) {
+        return tNormal;
     }
 
-    if (transposedNormal[transposedNormal.length - 1] <= transposedInverted[transposedInverted.length - 1]) {
-        return transposedNormal;
-    } else {
-        return transposedInverted;
+    // Comparar intervalos desde la izquierda (empaquetado a la izquierda, convención Forte/Rahn)
+    for (let i = 0; i < tNormal.length; i++) {
+        if (tNormal[i] < tInverted[i]) return tNormal;
+        if (tInverted[i] < tNormal[i]) return tInverted;
     }
+
+    return tNormal;
 }
