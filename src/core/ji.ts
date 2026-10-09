@@ -1,5 +1,5 @@
 // ji.ts
-import { gcd } from './mathUtils';
+import { gcd } from './mathUtils.ts';
 
 export type Ratio = [number, number];
 
@@ -27,7 +27,11 @@ export function divideRatios(a: Ratio, b: Ratio): Ratio {
 
 export function normalizeRatio(ratio: Ratio): Ratio {
     let [n, d] = simplifyRatio(ratio);
-    if (n === 0) return [0, 1]; // Edge case
+    if (n === 0 || d === 0) return [0, 1]; // Edge case: zero or division by zero
+    
+    // Work with absolute values to guarantee convergence
+    n = Math.abs(n);
+    d = Math.abs(d);
     
     while (n / d >= 2) {
         d *= 2;
@@ -40,13 +44,13 @@ export function normalizeRatio(ratio: Ratio): Ratio {
 
 export function getPrimeLimit(n: number): number {
     let maxPrime = 1;
-    // Evitar negativos
-    n = Math.abs(n);
+    // Evitar negativos y decimales
+    n = Math.abs(Math.round(n));
     if (n === 0 || n === 1) return 1;
     
     while (n % 2 === 0) {
         maxPrime = 2;
-        n >>= 1;
+        n /= 2;
     }
     for (let i = 3; i <= Math.sqrt(n); i += 2) {
         while (n % i === 0) {

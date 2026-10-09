@@ -1,5 +1,5 @@
 // edoBase.ts
-import { mod, uniqueSorted } from './mathUtils';
+import { mod, uniqueSorted } from './mathUtils.ts';
 
 /**
  * Generadores coprimos válidos por cada EDO comúnmente usado.

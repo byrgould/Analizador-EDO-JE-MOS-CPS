@@ -6,6 +6,7 @@
  * Esta función garantiza un resultado positivo.
  */
 export function mod(n: number, m: number): number {
+    if (m === 0) return 0;
     return ((n % m) + m) % m;
 }
 
@@ -39,8 +40,8 @@ export function arraysEqual(a: number[], b: number[]): boolean {
  * Calcula el máximo común divisor de dos números.
  */
 export function gcd(a: number, b: number): number {
-    a = Math.abs(a);
-    b = Math.abs(b);
+    a = Math.abs(Math.round(a));
+    b = Math.abs(Math.round(b));
     while (b) {
         let temp = b;
         b = a % b;

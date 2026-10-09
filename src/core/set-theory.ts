@@ -1,56 +1,49 @@
 // set-theory.ts
-import { mod, uniqueSorted } from './mathUtils';
-import { normalizePCs } from './edoBase';
+import { mod, uniqueSorted } from './mathUtils.ts';
+import { normalizePCs } from './edoBase.ts';
 
 /**
- * Desempata la packedness empacando hacia abajo (convención estándar de Set Theory).
- */
-function comparePackedness(rot1: number[], rot2: number[], edo: number): number[] {
-    const intervals1: number[] = [];
-    const intervals2: number[] = [];
-
-    for (let i = 0; i < rot1.length - 1; i++) {
-        intervals1.push(mod(rot1[i + 1] - rot1[i], edo));
-    }
-    for (let i = 0; i < rot2.length - 1; i++) {
-        intervals2.push(mod(rot2[i + 1] - rot2[i], edo));
-    }
-
-    for (let i = 0; i < intervals1.length; i++) {
-        if (intervals1[i] < intervals2[i]) return rot1;
-        if (intervals2[i] < intervals1[i]) return rot2;
-    }
-    return rot1;
-}
-
-/**
- * Encuentra la Forma Normal (Normal Form) de un set.
+ * Encuentra la Forma Normal (Normal Form) de un set siguiendo el algoritmo canónico de Rahn.
+ * 1. Genera todas las rotaciones cíclicas del conjunto ordenado.
+ * 2. Compara los intervalos desde el extremo exterior hacia el interior (k-1, k-2, ..., 1)
+ *    para encontrar la rotación más compacta (menor dispersión).
+ * 3. En caso de simetría exacta, desempata por el tono inicial menor.
  */
 export function normalForm(pcSet: number[], edo: number): number[] {
     const pcs = uniqueSorted(normalizePCs(pcSet, edo));
-    if (pcs.length < 2) return pcs;
+    const n = pcs.length;
+    if (n < 2) return pcs;
 
-    let rotations: number[][] = [];
-    for (let i = 0; i < pcs.length; i++) {
-        // En lugar de rotate(i.neg) de SuperCollider, en JS cortamos y pegamos
-        const rotation = [...pcs.slice(i), ...pcs.slice(0, i)];
-        rotations.push(rotation);
+    const rotations: number[][] = [];
+    for (let i = 0; i < n; i++) {
+        rotations.push([...pcs.slice(i), ...pcs.slice(0, i)]);
     }
 
-    let bestRotation = pcs;
-    let minSpan = edo;
+    let candidates = rotations;
 
-    for (const rotation of rotations) {
-        const span = mod(rotation[rotation.length - 1] - rotation[0], edo);
-        if (span < minSpan) {
-            minSpan = span;
-            bestRotation = rotation;
-        } else if (span === minSpan) {
-            bestRotation = comparePackedness(bestRotation, rotation, edo);
+    for (let offset = n - 1; offset >= 1; offset--) {
+        let minSpan = edo;
+        let nextCandidates: number[][] = [];
+
+        for (const rot of candidates) {
+            const span = mod(rot[offset] - rot[0], edo);
+            if (span < minSpan) {
+                minSpan = span;
+                nextCandidates = [rot];
+            } else if (span === minSpan) {
+                nextCandidates.push(rot);
+            }
         }
+
+        candidates = nextCandidates;
+        if (candidates.length === 1) break;
     }
 
-    return bestRotation;
+    if (candidates.length > 1) {
+        candidates.sort((a, b) => a[0] - b[0]);
+    }
+
+    return candidates[0];
 }
 
 /**
@@ -84,25 +77,26 @@ export function In(pcSet: number[], n: number, edo: number): number[] {
 }
 
 /**
- * Calcula la Prime Form de un set.
+ * Calcula la Prime Form de un set bajo el estándar canónico de Allen Forte y John Rahn.
+ * 1. Obtiene la Forma Normal del conjunto original y de su inversión.
+ * 2. Transpone ambas al origen 0 (T_0).
+ * 3. Compara elemento a elemento desde la izquierda (índice 1 en adelante) para seleccionar
+ *    la forma más empaquetada hacia el origen (most packed to the left).
  */
 export function primeForm(pcSet: number[], edo: number): number[] {
     const nf = normalForm(pcSet, edo);
+    if (nf.length === 0) return [];
+
     const inverted = invertSet(pcSet, 0, edo);
     const invertedNF = normalForm(inverted, edo);
 
-    const tNormal = nf.length > 0 ? transposeSet(nf, -nf[0], edo) : nf;
-    const tInverted = invertedNF.length > 0 ? transposeSet(invertedNF, -invertedNF[0], edo) : invertedNF;
+    const transposedNormal = transposeSet(nf, -nf[0], edo);
+    const transposedInverted = transposeSet(invertedNF, -invertedNF[0], edo);
 
-    if (tNormal.length === 0 || tInverted.length === 0) {
-        return tNormal;
+    for (let i = 1; i < transposedNormal.length; i++) {
+        if (transposedNormal[i] < transposedInverted[i]) return transposedNormal;
+        if (transposedInverted[i] < transposedNormal[i]) return transposedInverted;
     }
 
-    // Comparar intervalos desde la izquierda (empaquetado a la izquierda, convención Forte/Rahn)
-    for (let i = 0; i < tNormal.length; i++) {
-        if (tNormal[i] < tInverted[i]) return tNormal;
-        if (tInverted[i] < tNormal[i]) return tInverted;
-    }
-
-    return tNormal;
+    return transposedNormal;
 }
